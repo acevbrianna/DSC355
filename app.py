@@ -11,7 +11,6 @@
 
 
 #Install missing library in the current Jupyter environment
-get_ipython().run_line_magic('pip', 'install seaborn')
 
 
 # In[2]:
@@ -1128,8 +1127,6 @@ print("Week 7 model and test data saved successfully!")
 
 
 #Install Streamlit for the predictive model dashboard
-get_ipython().run_line_magic('pip', 'install streamlit joblib')
-
 
 # I installed Streamlit so I could turn my Week 7 logistic regression model into an interactive dashboard. I chose Streamlit because it seemed easier to work with than Dash and allows me to create an application using Python. The installation was successful, so I can now start setting up the application and connecting it to my saved model.
 
@@ -1457,7 +1454,6 @@ print("Process ID:", dashboard_process.pid)
 
 
 #Install Streamlit and Joblib
-get_ipython().run_line_magic('pip', 'install streamlit joblib')
 
 
 # I installed Streamlit to create the interactive application and Joblib to save the trained model. Saving the model allows the application to use the model created during the project without repeating the entire training process every time the application runs.
@@ -1655,7 +1651,6 @@ print(
 # In[64]:
 
 
-get_ipython().run_cell_magic('writefile', 'classification_app.py', '\n#Create Streamlit app\nimport streamlit as st\nimport pandas as pd\nimport joblib\n\n#Set up the page\nst.set_page_config(\n    page_title="Predicting Donor Churn for Nonprofit Organizations",\n    page_icon="📊",\n    layout="wide"\n)\n\n#Load the saved application bundle\nbundle = joblib.load(\n    "classification_app_bundle.joblib"\n)\n\nmodel = bundle["model"]\nnumeric_features = bundle["numeric_features"]\ncategorical_features = bundle["categorical_features"]\ncategory_choices = bundle["category_choices"]\nnumeric_defaults = bundle["numeric_defaults"]\n\n#Application title\nst.title(\n    "📊 Predicting Donor Churn for Nonprofit Organizations"\n)\n\nst.write(\n    """\n    This application uses the tuned logistic regression\n    model developed during my project,\n    Predicting Donor Churn for Nonprofit Organizations.\n\n    Enter predictor values below and the model will\n    predict whether the observation belongs to Class 0\n    or Class 1.\n    """\n)\n\nst.divider()\n\n#Input section\nst.subheader(\n    "Enter Predictor Values"\n)\n\nuser_input = {}\n\n#Numerical inputs\nst.write(\n    "### Numerical Features"\n)\n\nnum_cols = st.columns(2)\n\nfor index, feature in enumerate(\n    numeric_features\n):\n\n    with num_cols[index % 2]:\n\n        user_input[feature] = st.number_input(\n            feature,\n            value=float(\n                numeric_defaults[feature]\n            )\n        )\n\n#Categorical inputs\nst.write(\n    "### Categorical Features"\n)\n\ncat_cols = st.columns(2)\n\nfor index, feature in enumerate(\n    categorical_features\n):\n\n    with cat_cols[index % 2]:\n\n        user_input[feature] = st.selectbox(\n            feature,\n            category_choices[feature]\n        )\n\nst.divider()\n\n#Prediction button\nif st.button(\n    "Make Prediction",\n    type="primary"\n):\n\n    input_data = pd.DataFrame(\n        [user_input]\n    )\n\n    feature_order = (\n        numeric_features\n        + categorical_features\n    )\n\n    input_data = input_data[\n        feature_order\n    ]\n\n    prediction = model.predict(\n        input_data\n    )[0]\n\n    probability = model.predict_proba(\n        input_data\n    )[0, 1]\n\n    st.subheader(\n        "Prediction Result"\n    )\n\n    result_col1, result_col2 = (\n        st.columns(2)\n    )\n\n    result_col1.metric(\n        "Predicted Class",\n        int(prediction)\n    )\n\n    result_col2.metric(\n        "Probability of Class 1",\n        f"{probability:.1%}"\n    )\n\n    st.progress(\n        float(probability)\n    )\n\n    if prediction == 1:\n\n        st.success(\n            "The model predicts Class 1."\n        )\n\n    else:\n\n        st.info(\n            "The model predicts Class 0."\n        )\n\n#Model information\nwith st.expander(\n    "About the Model"\n):\n\n    st.write(\n        """\n        This application uses the tuned logistic regression\n        pipeline developed during the project,\n        Predicting Donor Churn for Nonprofit Organizations.\n\n        Hyperparameter tuning was completed using\n        GridSearchCV with 5-fold stratified\n        cross-validation.\n\n        Best model settings:\n\n        - C = 100\n        - L2 penalty\n        - liblinear solver\n\n        The pipeline also handles missing values,\n        numerical scaling, and one-hot encoding for\n        categorical variables.\n        """\n    )\n\nst.caption(\n    "Predicting Donor Churn for Nonprofit Organizations"\n)\n')
 
 
 # In[65]:
